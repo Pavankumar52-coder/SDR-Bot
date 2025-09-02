@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redbot Chat</title>
+    <!-- Combined CSS for styling the chatbot interface -->
+    <style>
+        /* Container for the whole chat interface */
+        .chat-container {
+            width: 350px;
+            height: 550px;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: height 0.3s ease-in-out;
+        }
+
+        /* Chat display area */
+        .chat-box {
+            padding: 20px;
+            height: 400px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            flex-grow: 1;
+        }
+
+        /* Base message styling */
+        .message {
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 18px;
+            max-width: 75%;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+
+        /* User's message styling */
+        .user-message {
+            background-color: #f2f2f2;
+            color: #333;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        /* Bot's message styling */
+        .bot-message {
+            background-color: #e02828; /* Red background */
+            color: #fff; /* White text */
+            border-bottom-left-radius: 4px;
+        }
+
+        /* Container for the FAQ and Yes/No buttons */
+        .dynamic-buttons-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px; /* Reduced gap */
+            padding: 10px; /* Reduced padding */
+            background-color: #fff;
+            border-top: 1px solid #e9ecef;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .faq-button, .yes-no-button {
+            padding: 8px; /* Reduced padding for smaller buttons */
+            border: 1px solid #ced4da;
+            border-radius: 20px; /* Reduced border-radius */
+            background-color: #fff;
+            font-size: 13px; /* Reduced font size */
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s, transform 0.2s;
+            text-align: center;
+        }
+        
+        /* Yes/No buttons styling */
+        .yes-no-button {
+            grid-column: span 1;
+            padding: 8px 15px;
+            background-color: #e02828;
+            color: #fff;
+            border-color: #e02828;
+            font-weight: bold;
+        }
+
+        .yes-no-button.no {
+            background-color: #fff;
+            color: #e02828;
+        }
+
+        .faq-button:hover, .yes-no-button:hover {
+            background-color: #f1f1f1;
+            transform: translateY(-2px);
+        }
+        
+        .yes-no-button.no:hover {
+            background-color: #f1f1f1;
+            color: #e02828;
+        }
+
+        .faq-button.other-queries {
+            grid-column: span 2;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Input area styling */
+        .input-container {
+            display: flex;
+            padding: 15px;
+            background-color: #fff;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        #user-input {
+            flex-grow: 1;
+            padding: 12px 18px;
+            border: 1px solid #ced4da;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        #user-input:focus {
+            border-color: #e02828; /* Red focus border */
+        }
+
+        .voice-control {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 10px;
+            background-color: #fff;
+        }
+
+        .voice-toggle-button {
+            background-color: #f1f1f1;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+            transition: background-color 0.2s;
+        }
+
+        .voice-toggle-button.active {
+            background-color: #e02828;
+            color: #fff;
+        }
+
+        #voice-button {
+            width: 50px;
+            height: 50px;
+            background-color: #e02828; /* Red button */
+            color: white;
+            border: none;
+            border-radius: 50%;
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 6px rgba(224, 40, 40, 0.4);
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        #voice-button:hover {
+            background-color: #c91f1f; /* Darker red on hover */
+            transform: scale(1.05);
+        }
+
+        #voice-button:active {
+            transform: scale(0.95);
+        }
+
+        /* Responsive design for smaller screens */
+        @media (max-width: 768px) {
+            .chat-container {
+                width: 100%;
+                margin: 0;
+                border-radius: 0;
+                height: 100vh;
+                position: static; /* Use static positioning on mobile for full-screen view */
+            }
+            #user-input {
+                font-size: 14px;
+            }
+        }
+
+        .lead-form-container {
+            padding: 20px;
+            background-color: #fff;
+            border-top: 1px solid #e9ecef;
+            display: none; /* Initially hidden */
+        }
+
+        .lead-form-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .lead-form-container input, .lead-form-container textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .lead-form-container textarea {
+            resize: none;
+            height: 80px;
+        }
+
+        .lead-form-container button {
+            width: 100%;
+            padding: 12px;
+            background-color: #e02828;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+    <!-- We're using the Inter font for a clean, modern look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="chat-container">
+        <!-- Voice on/off toggle -->
+        <div class="voice-control">
+            <button id="voice-toggle-button" class="voice-toggle-button active">Voice On</button>
+        </div>
+        <!-- The main chat display area where messages will appear -->
+        <div id="chat-box" class="chat-box">
+            <!-- Initial bot message to start the conversation -->
+            <div class="message bot-message">Hi, I am SDR for Red Switch. How may I help you?</div>
+        </div>
+        <!-- The dynamic area for FAQ and other buttons -->
+        <div id="dynamic-container"></div>
+        <!-- The input area for the user to type or speak -->
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="Type or speak your message...">
+            <!-- The microphone button for voice input -->
+            <button id="voice-button">🎤</button>
+        </div>
+        <div class="lead-form-container" id="lead-form-container">
+            <form id="lead-form">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" required>
+
+                <label for="contact_number">Contact Number</label>
+                <input type="tel" id="contact_number" name="contact_number" required>
+
+                <label for="location">Location</label>
+                <input type="text" id="location" name="location" required>
+
+                <label for="email">Mail ID</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="comments">Comments</label>
+                <textarea id="comments" name="comments" required></textarea>
+
+                <button type="submit">Submit Details</button>
+            </form>
+        </div>
+    </div>
+    <!-- Combined JavaScript -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const userInput = document.getElementById("user-input");
+            const chatBox = document.getElementById("chat-box");
+            const voiceButton = document.getElementById("voice-button");
+            const dynamicContainer = document.getElementById("dynamic-container");
+            const voiceToggleButton = document.getElementById("voice-toggle-button");
+            const leadFormContainer = document.getElementById("lead-form-container");
+            const leadForm = document.getElementById("lead-form");
+            const inputContainer = document.querySelector(".input-container");
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const SpeechSynthesis = window.SpeechSynthesisUtterance;
+            const synth = window.speechSynthesis;
+
+            let recognition;
+            let selectedVoice = null;
+            let isVoiceEnabled = true;
+
+            // Conversation state: 0 = Main Menu, 1 = Waiting for Yes/No, 2 = Lead Form
+            let conversationState = 0;
+            let hasSpokenInitialGreeting = false;
+            let idleTimer;
+            const IDLE_TIMEOUT = 20000; // 20 seconds in milliseconds
+
+            const faqs = {
+                "Startups vs Enterprises": "Do you work with startups or only enterprises?",
+                "Ongoing Support": "Do you offer ongoing support?",
+                "Cloud Providers": "Do you partner with cloud providers?",
+                "What makes us unique": "What makes Red Switch unique?",
+                "Pricing": "How do you price your solutions?",
+                "Services": "What services does Red Switch provide?",
+                "Industries": "What industries does Red Switch serve?",
+                "Data Security": "How does Red Switch ensure data security?",
+                "Real-time Data": "Do your dashboards support real-time data?",
+                "Role-based Dashboards": "Can we get role-based dashboards?"
+            };
+            
+            // Initial FAQ buttons
+            createFaqButtons();
+            resetIdleTimer();
+
+            function createFaqButtons() {
+                dynamicContainer.innerHTML = '';
+                const buttonsDiv = document.createElement("div");
+                buttonsDiv.className = "dynamic-buttons-container";
+                
+                Object.keys(faqs).forEach(text => {
+                    const button = document.createElement("button");
+                    button.textContent = text;
+                    button.className = "faq-button";
+                    button.onclick = () => {
+                        userInput.value = faqs[text];
+                        sendMessage();
+                    };
+                    buttonsDiv.appendChild(button);
+                });
+
+                const otherQueriesButton = document.createElement("button");
+                otherQueriesButton.textContent = "Other Queries";
+                otherQueriesButton.className = "faq-button other-queries";
+                otherQueriesButton.onclick = () => {
+                    userInput.value = "other queries";
+                    sendMessage();
+                };
+                buttonsDiv.appendChild(otherQueriesButton);
+                
+                dynamicContainer.appendChild(buttonsDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+
+            function createYesNoButtons() {
+                dynamicContainer.innerHTML = '';
+                const buttonsDiv = document.createElement("div");
+                buttonsDiv.className = "dynamic-buttons-container";
+
+                const yesButton = document.createElement("button");
+                yesButton.textContent = "Yes";
+                yesButton.className = "yes-no-button yes";
+                yesButton.onclick = () => {
+                    userInput.value = "Yes";
+                    sendMessage();
+                };
+
+                const noButton = document.createElement("button");
+                noButton.textContent = "No";
+                noButton.className = "yes-no-button no";
+                noButton.onclick = () => {
+                    userInput.value = "No";
+                    sendMessage();
+                };
+
+                buttonsDiv.appendChild(yesButton);
+                buttonsDiv.appendChild(noButton);
+                dynamicContainer.appendChild(buttonsDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+
+            function setVoice() {
+                const voices = synth.getVoices();
+                const voice_name_to_find = "Google US English";
+                selectedVoice = voices.find(voice => voice.name === voice_name_to_find && voice.lang === 'en-US');
+                if (!selectedVoice) {
+                    selectedVoice = voices.find(voice => voice.lang === 'en-US') || voices[0];
+                }
+            }
+            synth.onvoiceschanged = setVoice;
+            setVoice();
+
+            voiceToggleButton.addEventListener("click", () => {
+                isVoiceEnabled = !isVoiceEnabled;
+                if (isVoiceEnabled) {
+                    voiceToggleButton.textContent = "Voice On";
+                    voiceToggleButton.classList.add("active");
+                    voiceButton.style.display = 'flex';
+                } else {
+                    voiceToggleButton.textContent = "Voice Off";
+                    voiceToggleButton.classList.remove("active");
+                    if (synth.speaking) {
+                        synth.cancel();
+                    }
+                    voiceButton.style.display = 'none';
+                }
+            });
+
+            if (SpeechRecognition && SpeechSynthesis) {
+                recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.lang = 'en-US';
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    userInput.value = transcript;
+                    sendMessage();
+                };
+                recognition.onerror = function(event) {
+                    console.error("Speech recognition error:", event.error);
+                    appendMessage("Sorry, I didn't catch that. Please type or press the mic again.", "bot-message");
+                    speak("Sorry, I didn't catch that. Please type or press the mic again.");
+                };
+                recognition.onend = function() {
+                    userInput.placeholder = "Type or speak your message...";
+                    voiceButton.style.backgroundColor = '#e02828';
+                };
+                voiceButton.addEventListener("click", function() {
+                    if (!isVoiceEnabled) return;
+                    try {
+                        if (synth.speaking) {
+                            synth.cancel();
+                        }
+                        recognition.start();
+                        userInput.placeholder = "Listening...";
+                        voiceButton.style.backgroundColor = '#c91f1f';
+                    } catch(e) {
+                        console.error("Error starting speech recognition:", e);
+                        appendMessage("Voice input is not available. Please type your message.", "bot-message");
+                        speak("Voice input is not available. Please type your message.");
+                    }
+                });
+            } else {
+                voiceButton.style.display = 'none';
+                voiceToggleButton.style.display = 'none';
+            }
+
+            // User input and interaction event listeners
+            userInput.addEventListener("keypress", function(event) {
+                resetIdleTimer();
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            document.addEventListener("click", resetIdleTimer);
+            document.addEventListener("mousemove", resetIdleTimer);
+            document.addEventListener("touchstart", resetIdleTimer);
+
+            function resetIdleTimer() {
+                clearTimeout(idleTimer);
+                idleTimer = setTimeout(triggerIdleForm, IDLE_TIMEOUT);
+            }
+
+            function triggerIdleForm() {
+                appendMessage("Looks like you've been away for a moment. To continue, please fill out the form below.", "bot-message");
+                speak("Looks like you've been away for a moment. To continue, please fill out the form below.");
+                
+                fetch("/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        message: "idle_timeout",
+                        state: conversationState
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    conversationState = data.new_state;
+                    leadFormContainer.style.display = 'block';
+                    inputContainer.style.display = 'none';
+                    dynamicContainer.style.display = 'none';
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                });
+            }
+
+            function sendMessage() {
+                const userText = userInput.value.trim();
+                resetIdleTimer();
+
+                if (!hasSpokenInitialGreeting) {
+                    const initialMessage = document.querySelector(".bot-message").textContent;
+                    speak(initialMessage);
+                    hasSpokenInitialGreeting = true;
+                }
+
+                if (userText !== "") {
+                    appendMessage(userText, "user-message");
+                    userInput.value = "";
+                    dynamicContainer.innerHTML = '';
+                    leadFormContainer.style.display = 'none';
+                    
+                    // Handle "Yes/No" state first
+                    if (conversationState === 1) {
+                        if (userText.toLowerCase() === 'yes') {
+                            appendMessage("Great! What else can I help you with?", "bot-message");
+                            speak("Great! What else can I help you with?");
+                            conversationState = 0;
+                            createFaqButtons();
+                        } else if (userText.toLowerCase() === 'no') {
+                            appendMessage("Thank you for chatting with me. Have a great day!", "bot-message");
+                            speak("Thank you for chatting with me. Have a great day!");
+                            userInput.disabled = true; // Disable input
+                            voiceButton.disabled = true; // Disable voice button
+                            inputContainer.style.opacity = 0.5; // Visually disable the input area
+                            dynamicContainer.innerHTML = '';
+                        }
+                        return; // Exit the function to avoid the API call for Yes/No
+                    }
+
+                    fetch("/chat", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            message: userText,
+                            state: conversationState
+                        }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        appendMessage(data.response, "bot-message");
+                        speak(data.response);
+                        conversationState = data.new_state;
+
+                        if (conversationState === 0) {
+                            // After providing a response, ask if they need anything else
+                            appendMessage("Is there anything else I can help you with?", "bot-message");
+                            speak("Is there anything else I can help you with?");
+                            createYesNoButtons();
+                            conversationState = 1; // Change state to wait for Yes/No
+                        } else if (conversationState === 2) {
+                            leadFormContainer.style.display = 'block';
+                            inputContainer.style.display = 'none';
+                            dynamicContainer.style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        const errorMessage = "Sorry, something went wrong. Please try again.";
+                        appendMessage(errorMessage, "bot-message");
+                        speak(errorMessage);
+                    });
+                }
+            }
+
+            leadForm.addEventListener("submit", function(event) {
+                event.preventDefault();
+                resetIdleTimer();
+
+                const formData = new FormData(leadForm);
+                const leadData = {};
+                formData.forEach((value, key) => {
+                    leadData[key] = value;
+                });
+
+                // NOTE: A real-world application would send this data to a backend
+                // server to be stored in a database (e.g., Firestore) or
+                // CRM, and then potentially exported to an Excel file.
+                // This client-side code simulates the data submission.
+                
+                fetch("/chat", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        message: "submit_lead_form",
+                        state: conversationState,
+                        user_data: leadData
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    appendMessage(data.response, "bot-message");
+                    speak(data.response);
+                    conversationState = data.new_state;
+                    leadFormContainer.style.display = 'none';
+                    inputContainer.style.display = 'flex';
+                    dynamicContainer.style.display = 'block';
+
+                    if (conversationState === 0) {
+                        createFaqButtons();
+                    }
+                })
+                .catch(error => {
+                    console.error("Error submitting form:", error);
+                    const errorMessage = "Sorry, there was an error submitting your details. Please try again.";
+                    appendMessage(errorMessage, "bot-message");
+                    speak(errorMessage);
+                });
+            });
+
+            function appendMessage(text, className) {
+                const messageDiv = document.createElement("div");
+                messageDiv.classList.add("message", className);
+                messageDiv.textContent = text;
+                chatBox.appendChild(messageDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+
+            function speak(text) {
+                if (isVoiceEnabled && synth && SpeechSynthesis) {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    if (selectedVoice) {
+                        utterance.voice = selectedVoice;
+                    }
+                    synth.speak(utterance);
+                }
+            }
+
+            userInput.addEventListener("input", () => {
+                if (synth.speaking) {
+                    synth.cancel();
+                }
+            });
+            voiceButton.addEventListener("click", () => {
+                if (synth.speaking) {
+                    synth.cancel();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
