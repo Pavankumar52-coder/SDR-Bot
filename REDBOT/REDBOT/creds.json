@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "redbot-service-account-469711",
+  "private_key_id": "c9edf9ca37c774d6310d613b160c942657d2cfe7",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDVII9WfnI3UFER\ntbIetLMWRnvvRp+S9WbbBXmfT9I7spuBIygLiBKUWClxo1Nwl6zT+dkFjt8qVKEo\n89yIHJ0hSV8yBI2DxHaoozwjpmJzhHVReINKWrr7YFCwZzgELdLlgUdj1UGqcGtK\nrRVr9dDZJuaqC8/MUldSCD66FcskJnfP5zH+/eQXXugais1zLsRPFatLrdGRHQkV\nwGl5gBNXHDSiQ0HbyMyNl0ffW0Ye7218FTmux/wLHUPvD+LqkemUxUtGEZlb77kk\nwaKFWvpCSQzrRaMa3huIOovMDQo2wVZ3jElep1eKm3JWakFdCf755K5JakCAH4tA\nkYRfRik/AgMBAAECggEADb91b5Nlg7rrF9TcIg3u9XNjgDpShdTNpzgxsbyg55fs\nXwapCSFkbWxIdBuggMVP8TaPMMQYEi92W+FrKt6JpkGI4f2YMVVFgDhTY0tS03fK\nZ5B6C5xRrnB2lAJ8gwx/q61MsRxrCXcJ/L2wgY/QQom3XGW5qEjxeAmvHirUuUah\n0PEUThgL6zTeApNSgG7FHG8Vl5VE5IMNa2IXrFlh9oHGEdr/9fLFgOreykkQGm0b\nbMAY8aPSA7CE6Gndl5ehZ9ETVigjsa8MOU2N5CvbDx0ukKc7kRgDKug95XrLcHU6\ntXi0r1W9EefBBxYvBMOPYuh0OfEOloMTUjd1QJAWPQKBgQDydkR2ZZ/eBlRk8OoX\nw85Q8YyLZz8xrVuDL4ARAFB0COhyOli4091zea1olF3jr8yWHWC/39RT5pT8OXrD\n34HuCCted0SqflV/P7wGHIqff0xrnOaP2zdQ02vbj8946Am/R83zAw6ubEF7glsN\n2IqA5AhFGkQIW9dwV9LQKHgFcwKBgQDhBvu0aaiBtNPROP0kwme29rMt1x5EtK1U\n8aKYF0OGufoyRmyuViS6Qi+W+tKbx/02/w489zSX+UNckyuSb1wZ+1Qvhr2Pl3bO\nej670wOSJFDaPRhNZI44d/wGwZpvWcIlwM9vVaqfBvzNkbUl9MtMpLjTfxDfHtJd\nQr6N8QY6BQKBgCrFdDRSnw4CndakrRb+IqIiykE5OGuiAje1JGlbXdXqUF7+LfKE\n5VbeixmcuqdUtslwa0XNzV3zmiqYVTDCd+Aurr/eWE2fNaPZ8Wg+lrGmOivtpLqR\n2EM42JkF2HqirD2DBDCvRGK+lBqel0NtBJnSICdYh9HVqb6Wr4iq6ulDAoGABNrn\nt17IOfQy1cLLA24GWtY7y3NmvcjALKMCBRILbO66TTdjxOcq57Hh4PoMbTwFZJhg\nMESNJ/JC1859FC2+6PiZOmVH1b9I2u+cRuUooJCUBgFnctQGlYVRNLwcnuZq3/Gn\nCBnrEn9OGQlZxTXg5QhwzG9jZ8z8cPKttdZLchkCgYBbAQRjAhrKLrt4Ty8qjyQA\n8r270wonfJOG3VR4TciGoOCHkJE92I2EfJ4ze2Iz+dTngpEJz9CT+M+85uLpWCBr\nsRao04xLlimKuFR0CTgf96M0skoITDOc4+GIghDYTJmdiCK/mL5t+mTaW3C4Gd/C\nWAteWre95sjcPF3ZE+mdbA==\n-----END PRIVATE KEY-----\n",
+  "client_email": "redbot-service-account@redbot-service-account-469711.iam.gserviceaccount.com",
+  "client_id": "117352885587259026897",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/redbot-service-account%40redbot-service-account-469711.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
